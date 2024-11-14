@@ -1,28 +1,32 @@
 job('NodeJS example') {
     scm {
-        git('https://github.com/pramshy/JenkinsTutorial.git') / 'extensions' / 'hudson.plugins.git.extensions.impl.SparseCheckoutPaths' / 'sparseCheckoutPaths' {
+        git() {
+            remote {
+                url("https://github.com/pramshy/JenkinsTutorial.git")
+            }
 
-             node -> // is hudson.plugins.git.GitSCM
-                node / gitConfigName('DSL User')
-                node / gitConfigEmail('jenkins-dsl@newtech.academy')
+            branch('*/master')
 
-                ['docker-demo'].each {
-                mypath ->
-                'hudson.plugins.git.extensions.impl.SparseCheckoutPath' {
-                    path("${mypath}")
+            extensions {
+                sparseCheckoutPaths {
+                    sparseCheckoutPaths {
+                        sparseCheckoutPath {
+                            path('docker-demo')
+                        }
+                    }
                 }
             }
         }
     }
+
     triggers {
         scm('H/5 * * * *')
     }
     wrappers {
-        nodejs('nodejs') // this is the name of the NodeJS installation in 
-                         // Manage Jenkins -> Configure Tools -> NodeJS Installations -> Name
+        nodejs('nodejs_4.6.1') // this is the name of the NodeJS installation in
+        // Manage Jenkins -> Configure Tools -> NodeJS Installations -> Name
     }
     steps {
-        shell("cd docker-demo/")
-        shell("npm install")
+        shell('cd docker-demo/ && npm install')
     }
 }
