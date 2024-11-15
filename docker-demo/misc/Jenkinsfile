@@ -7,13 +7,15 @@ node {
    }
    stage('test') {
      nodejs(nodeJSInstallationName: 'nodejs_4.6.1') {
+      dir('docker-demo') {
        sh 'npm install --only=dev'
        sh 'npm test'
+      }
      }
    }
    stage('docker build/push') {
      docker.withRegistry('https://index.docker.io/v2/', 'dockerhub') {
-       def app = docker.build("prsharma/jenkins-node-demo:${commit_id}", './docker-demo').push()
+       def app = docker.build("prsharma/jenkins-node-demo:${commit_id}", './docker-demo/').push()
      }
    }
 }
